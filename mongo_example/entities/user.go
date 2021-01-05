@@ -33,3 +33,9 @@ type BaseEntity struct {
 type Unique interface {
 	UniqueKey() interface{}
 }
+
+func test() {
+	var u *User
+	u.iface.UniqueKey()
+	u.UniqueKey()
+}
