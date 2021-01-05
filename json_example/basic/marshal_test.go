@@ -1,4 +1,4 @@
-package json_example_test
+package basic_test
 
 import (
 	"encoding/json"

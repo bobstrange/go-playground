@@ -4,13 +4,20 @@ import (
 	"encoding/json"
 	"fmt"
 	"testing"
-	"time"
 
-	"github.com/bobstrange/go-playground/json_example"
+	"time"
 )
 
+type User struct {
+	ID        string    `json:"id"`
+	Name      string    `json:"name"`
+	Email     string    `json:"email"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
 func TestMarshalJSONWithTime(t *testing.T) {
-	u := json_example.User{
+	u := User{
 		ID:        "user01",
 		Name:      "John Doe",
 		Email:     "john.dow@email.com",
@@ -36,7 +43,7 @@ func TestUnmarshalJSONWithTime(t *testing.T) {
 		"updated_at": "2020-12-21T17:22:53.123+09:00"
 	}
 	`
-	var u json_example.User
+	var u User
 	err := json.Unmarshal([]byte(i), &u)
 	if err != nil {
 		t.Fatal("It shouldn't get error but got ", err)
