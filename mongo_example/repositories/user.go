@@ -37,7 +37,18 @@ func newCollection() (*mongo.Collection, error) {
 	return db.Collection(collName), nil
 }
 
-func Update(ctx context.Context, replacement *entities.User) error {
+type userRepo struct{}
+
+func NewUserRepo() UserRepoIface {
+	return &userRepo{}
+}
+
+type UserRepoIface interface {
+	Update(ctx context.Context, data *entities.User) error
+	Find(ctx context.Context, filter interface{}) ([]*entities.User, error)
+}
+
+func (u *userRepo) Update(ctx context.Context, replacement *entities.User) error {
 	filter := bson.M{"id": replacement.ID}
 	coll, _ := newCollection()
 	// upsert の設定
@@ -46,7 +57,7 @@ func Update(ctx context.Context, replacement *entities.User) error {
 	return err
 }
 
-func Find(ctx context.Context, filter interface{}) ([]*entities.User, error) {
+func (u *userRepo) Find(ctx context.Context, filter interface{}) ([]*entities.User, error) {
 	coll, _ := newCollection()
 	cur, err := coll.Find(ctx, filter)
 
