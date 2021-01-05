@@ -6,6 +6,6 @@ import (
 )
 
 func main() {
-	repo := repositories.NewUserRepo()
+	repo := repositories.NewRepo()
 	handler.Handle(repo)
 }

@@ -10,7 +10,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-func Handle(repo repositories.UserRepoIface) ([]byte, error) {
+func Handle(repo repositories.RepoIface) ([]byte, error) {
 	input := `
 	[
 		{
@@ -41,7 +41,7 @@ func Handle(repo repositories.UserRepoIface) ([]byte, error) {
 	]
 	`
 
-	var users []entities.User
+	var users []*entities.User
 
 	// json のパース
 	if err := json.Unmarshal([]byte(input), &users); err != nil {
@@ -53,10 +53,10 @@ func Handle(repo repositories.UserRepoIface) ([]byte, error) {
 	for _, user := range users {
 		err := repo.Update(
 			context.TODO(),
-			&user,
+			user,
 		)
 		if err != nil {
-			log.Fatalln(err)
+			log.Fatalln("upsert error:", err)
 		}
 	}
 
@@ -73,11 +73,17 @@ func Handle(repo repositories.UserRepoIface) ([]byte, error) {
 		log.Fatalln("Find error: ", err)
 	}
 	log.Printf("Find res: %v\n", res)
-	for _, data := range res {
-		log.Printf("res data: %v\n", data)
+	var foundUsers []*entities.User
+
+	data, err := json.Marshal(res)
+	if err != nil {
+		log.Fatalln("Json Marshal error: ", err)
+	}
+	if err := json.Unmarshal(data, &foundUsers); err != nil {
+		log.Fatalln("Json Unmarshal error: ", err)
 	}
 
-	jsonData, err := json.Marshal(res)
+	jsonData, err := json.Marshal(foundUsers)
 	if err != nil {
 		log.Fatalln("Error: ", err)
 	}
