@@ -37,12 +37,13 @@ func newCollection() (*mongo.Collection, error) {
 	return db.Collection(collName), nil
 }
 
-func Update(ctx context.Context, replacement *entities.User) (*mongo.UpdateResult, error) {
+func Update(ctx context.Context, replacement *entities.User) error {
 	filter := bson.M{"id": replacement.ID}
 	coll, _ := newCollection()
 	// upsert の設定
 	opts := options.Replace().SetUpsert(true)
-	return coll.ReplaceOne(ctx, filter, replacement, opts)
+	_, err := coll.ReplaceOne(ctx, filter, replacement, opts)
+	return err
 }
 
 func Find(ctx context.Context, filter interface{}) ([]*entities.User, error) {

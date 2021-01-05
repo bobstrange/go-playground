@@ -35,7 +35,7 @@ func main() {
 			"first_name": "Nikola",
 			"last_name": "Jokic",
 			"age": 25,
-			"created_at": "Tue Jan 5 17:02:39 JST 2021",
+			"created_at": "2021-01-05T10:11:20Z",
 			"updated_at": null
 		}
 	]
@@ -51,14 +51,13 @@ func main() {
 
 	// ループして、 upsert
 	for _, user := range users {
-		res, err := repositories.Update(
+		err := repositories.Update(
 			context.TODO(),
 			&user,
 		)
 		if err != nil {
 			log.Fatalln(err)
 		}
-		log.Printf("res: %v\n", res)
 	}
 
 	// Insert した内容を取得
