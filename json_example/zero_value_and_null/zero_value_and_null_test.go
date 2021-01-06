@@ -2,7 +2,6 @@ package zero_value_and_null_test
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"testing"
 	"time"
@@ -33,7 +32,6 @@ func getTestCase() *testCase {
 		[
 			{
 				"name": "Micheal Jordan",
-				"nickname": "MJ",
 				"rings": 6,
 				"created_at": "2020-01-05T01:23:45+09:00",
 				"deleted_at": "2020-01-05T01:23:45+09:00"
@@ -50,6 +48,11 @@ func getTestCase() *testCase {
 				"rings": 0,
 				"created_at": "2020-01-05T01:23:45+09:00",
 				"deleted_at": null
+			},
+			{
+				"name": "Dummy",
+				"created_at": "2020-01-01T00:00:00Z",
+				"dummy_field": "test"
 			}
 		]
 		`,
@@ -67,7 +70,7 @@ func getTestCase() *testCase {
 				DeletedAt: nil,
 			},
 			{
-				Name:      "Kobe Bryant",
+				Name:      "Kyrie Irving",
 				Nickname:  nil,
 				CreatedAt: &tick,
 				DeletedAt: nil,
@@ -82,25 +85,25 @@ func parse(s string) ([]*User, error) {
 	return users, err
 }
 
-type Users []*User
-
-func (users Users) String() string {
-	s := "["
-	for i, user := range users {
-		if i > 0 {
-			s += ", "
-		}
-		s += fmt.Sprintf("%v", user)
-	}
-	return s + "]"
-}
 func TestMarshal(t *testing.T) {
 	ex := getTestCase()
-	res, err := parse(ex.input)
+	users, err := parse(ex.input)
 	if err != nil {
 		t.Fatal("This shouldn't return any errors but got ", err)
 	}
-	for i, d := range res {
-		log.Printf("i: %d d: %v\n", i, *d.Rings)
+	for i, d := range users {
+		log.Printf("i: %d name: %v\n", i, d.Name)
+		log.Println("i: ", i, " nickname:", d.Nickname)
+		log.Println("i: ", i, " deletedAt:", d.DeletedAt)
 	}
+}
+
+func TestMarshalAndUnmarshal(t *testing.T) {
+	ex := getTestCase()
+	users, err := parse(ex.input)
+	data, err := json.Marshal(users)
+	if err != nil {
+		log.Fatalln("Fail to marshal with error:", err)
+	}
+	log.Println(string(data))
 }
