@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"time"
 )
 
 type User any
@@ -30,4 +31,18 @@ func goodHandling() (*User, error) {
 		return nil, fmt.Errorf("fail to get invited user with email (%s): %w", email, err)
 	}
 	return user, nil
+}
+
+func retry() error {
+	var b []byte
+
+	ctx := context.Background()
+	err := retry.Exponential(ctx, 1*time.Second, func(ctx context.Context) error {
+		_, ierr := tcpClient.Read(b)
+		return ierr
+	})
+	if err != nil {
+		return fmt.Errorf("fail to read from tcp client: %w", err)
+	}
+	return nil
 }
