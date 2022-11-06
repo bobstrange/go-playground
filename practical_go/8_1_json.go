@@ -20,9 +20,18 @@ func main() {
 	defer f.Close()
 
 	var resp ip
+	// 入力が io.Reader interface を満たす場合 os.Stdin や http.Response.Body など
 	if err := json.NewDecoder(f).Decode(&resp); err != nil {
 		log.Fatal(err)
 	}
 	fmt.Printf("%+v\n", resp)
 	// {Origin:255.255.255.255 URL:https://httpbin.org/get}
+
+	s := `{"origin": "255.255.255.255", "url": "https://httpbin.org/get"}`
+	var resp2 ip
+	if err = json.Unmarshal([]byte(s), &resp2); err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Printf("%+v\n", resp2)
 }
