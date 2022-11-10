@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -34,4 +35,14 @@ func main() {
 	}
 
 	fmt.Printf("%+v\n", resp2)
+
+	var b bytes.Buffer
+	ip := ip{
+		Origin: "255.255.255.255",
+		URL:    "https://httpbin.org/get",
+	}
+	_ = json.NewEncoder(&b).Encode(ip)
+	fmt.Printf("%v\n", b.String())
+	b2, _ := json.Marshal(ip)
+	fmt.Println(string(b2))
 }
