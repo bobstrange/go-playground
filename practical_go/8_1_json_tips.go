@@ -11,8 +11,14 @@ type user struct {
 	Languages []string `json:"languages"`
 }
 
-func main() {
+type user2 struct {
+	UserID    string   `json:"user_id"`
+	UserName  string   `json:"user_name"`
+	Languages []string `json:"languages,omitempty"`
+}
 
+func main() {
+	// Slice を含む構造体のエンコード
 	// Languages に空スライスを設定しない場合
 	u := user{
 		UserID:   "12345",
@@ -33,4 +39,12 @@ func main() {
 	fmt.Println(string(b))
 	// 出力の languages は [] になる {"user_id":"12345","user_name":"John","languages":[]}
 
+	// 構造体のタグに omitempty を設定する -> ゼロ値の場合にエンコードされない
+	u2 := user2{
+		UserID:   "12345",
+		UserName: "Jane",
+	}
+	b, _ = json.Marshal(u2)
+	fmt.Println(string(b))
+	// 出力の languages は出力されない {"user_id":"12345","user_name":"Jane"}
 }
