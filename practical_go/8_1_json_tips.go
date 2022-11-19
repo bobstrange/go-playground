@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -65,4 +66,20 @@ func main() {
 	b, _ = json.Marshal(bottle)
 	fmt.Println(string(b))
 	// {"name":"Coca-Cola","kcal":0}
+
+	// 想定していないフィールドが JSON に含まれていた時にエラーを出す
+	// DisallowUnknownFields
+
+	type Rectangle struct {
+		Width  int `json:"width"`
+		Height int `json:"height"`
+	}
+
+	s := []byte(`{"width": 10, "height": 20, "radius": 5}`)
+	var rect Rectangle
+	d := json.NewDecoder(bytes.NewReader(s))
+	d.DisallowUnknownFields()
+	if err := d.Decode(&rect); err != nil {
+		fmt.Println(err) // Will print `json: unknown field "radius"`
+	}
 }
