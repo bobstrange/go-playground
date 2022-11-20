@@ -28,8 +28,8 @@ type bottle struct {
 
 func Int(v int) *int { return &v }
 
-func main() {
-	// Slice を含む構造体のエンコード
+// Slice を含む構造体のエンコード
+func encodeStructWithSlice() {
 	// Languages に空スライスを設定しない場合
 	u := user{
 		UserID:   "12345",
@@ -49,26 +49,33 @@ func main() {
 	b, _ = json.Marshal(u)
 	fmt.Println(string(b))
 	// 出力の languages は [] になる {"user_id":"12345","user_name":"John","languages":[]}
+}
 
+func omitEmpty() {
 	// 構造体のタグに omitempty を設定する -> ゼロ値の場合にエンコードされない
 	u2 := user2{
 		UserID:   "12345",
 		UserName: "Jane",
 	}
-	b, _ = json.Marshal(u2)
+	b, _ := json.Marshal(u2)
 	fmt.Println(string(b))
 	// 出力の languages は出力されない {"user_id":"12345","user_name":"Jane"}
+}
 
+func distinguishNullAndZero() {
 	// ゼロ値と区別するためにはポインタを使う (ポインタの場合ゼロ値 nil)
 	bottle := bottle{
 		Name:  "Coca-Cola",
 		Price: 0,
 		KCal:  Int(0),
 	}
-	b, _ = json.Marshal(bottle)
+	b, _ := json.Marshal(bottle)
 	fmt.Println(string(b))
 	// {"name":"Coca-Cola","kcal":0}
 
+}
+
+func disallowUnknownFields() {
 	// 想定していないフィールドが JSON に含まれていた時にエラーを出す
 	// DisallowUnknownFields
 
@@ -84,9 +91,6 @@ func main() {
 	if err := d.Decode(&rect); err != nil {
 		fmt.Println(err) // Will print `json: unknown field "radius"`
 	}
-
-	customMarshal()
-
 }
 
 // Marshal と Unmarshal を拡張する
@@ -114,4 +118,12 @@ func customMarshal() {
 	b, _ := json.Marshal(r)
 	fmt.Println(string(b))
 
+}
+
+func main() {
+	encodeStructWithSlice()
+	omitEmpty()
+	distinguishNullAndZero()
+	disallowUnknownFields()
+	customMarshal()
 }
