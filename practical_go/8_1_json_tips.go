@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"strconv"
+	"time"
 )
 
 type user struct {
@@ -82,4 +84,34 @@ func main() {
 	if err := d.Decode(&rect); err != nil {
 		fmt.Println(err) // Will print `json: unknown field "radius"`
 	}
+
+	customMarshal()
+
+}
+
+// Marshal と Unmarshal を拡張する
+type Record struct {
+	ProcessID string `json:"process_id"`
+	DeletedAt JSTime `json:"deleted_at"`
+}
+
+type JSTime time.Time
+
+func (t JSTime) MarshalJSON() ([]byte, error) {
+	tt := time.Time(t)
+	if tt.IsZero() {
+		return []byte("null"), nil
+	}
+	v := strconv.Itoa(int(tt.UnixMilli()))
+	return []byte(v), nil
+}
+
+func customMarshal() {
+	r := &Record{
+		ProcessID: "12345",
+		DeletedAt: JSTime(time.Now()),
+	}
+	b, _ := json.Marshal(r)
+	fmt.Println(string(b))
+
 }
