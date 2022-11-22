@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"log"
 	"strconv"
 	"time"
 )
@@ -107,9 +108,11 @@ func (t JSTime) MarshalJSON() ([]byte, error) {
 		return []byte("null"), nil
 	}
 	v := strconv.Itoa(int(tt.UnixMilli()))
+
 	return []byte(v), nil
 }
 
+// JSON の encode
 func customMarshal() {
 	r := &Record{
 		ProcessID: "12345",
@@ -117,7 +120,32 @@ func customMarshal() {
 	}
 	b, _ := json.Marshal(r)
 	fmt.Println(string(b))
+	// unixtime になる {"process_id":"12345","deleted_at":1669128281743}
+}
 
+// JSON の decode
+func (t *JSTime) UnmarshalJSON(data []byte) error {
+	var jsonNumber json.Number
+	err := json.Unmarshal(data, &jsonNumber)
+	if err != nil {
+		return err
+	}
+	unix, err := jsonNumber.Int64()
+	if err != nil {
+		return err
+	}
+
+	*t = JSTime(time.Unix(0, unix))
+	return nil
+}
+
+func customUnmarshal() {
+	s := `{"process_id":"12345","deleted_at":1669128784280}`
+	var r *Record
+	if err := json.Unmarshal([]byte(s), &r); err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("%+v\n", time.Time(r.DeletedAt).Format(time.RFC3339Nano))
 }
 
 func main() {
@@ -126,4 +154,5 @@ func main() {
 	distinguishNullAndZero()
 	disallowUnknownFields()
 	customMarshal()
+	customUnmarshal()
 }
