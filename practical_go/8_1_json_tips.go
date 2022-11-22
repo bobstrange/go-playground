@@ -148,6 +148,48 @@ func customUnmarshal() {
 	fmt.Printf("%+v\n", time.Time(r.DeletedAt).Format(time.RFC3339Nano))
 }
 
+// 動的に JSON のフィールドが変わる場合
+type Response struct {
+	Type      string `json:"type"`
+	Timestamp int    `json:"timestamp"`
+	// Payload を展開せず json.RawMessage で保持
+	Payload json.RawMessage `json:"payload"`
+}
+
+type Message struct {
+	ID        string  `json:"id"`
+	UserID    string  `json:"user_id"`
+	Message   string  `json:"message"`
+	Latitude  float64 `json:"latitude"`
+	Longitude float64 `json:"longitude"`
+}
+
+type Sensor struct {
+	ID        string `json:"id"`
+	DeviceID  string `json:"device_id"`
+	Result    string `json:"result"`
+	ProductID string `json:"product_id"`
+}
+
+func dynamicJSONDecode(jsonStr string) {
+
+	var r Response
+	_ = json.Unmarshal([]byte(jsonStr), &r)
+
+	switch r.Type {
+	case "message":
+		var m Message
+		_ = json.Unmarshal(r.Payload, &m)
+		log.Println(m)
+	case "sensor":
+		var s Sensor
+		_ = json.Unmarshal(r.Payload, &s)
+		log.Println(s)
+	default:
+		log.Fatal("unknown type")
+	}
+}
+
 func main() {
 	encodeStructWithSlice()
 	omitEmpty()
@@ -155,4 +197,6 @@ func main() {
 	disallowUnknownFields()
 	customMarshal()
 	customUnmarshal()
+	dynamicJSONDecode(`{"type":"message","timestamp":1626290000,"payload":{"id":"12345","user_id":"12345","message":"hello","latitude":35.123456,"longitude":135.123456}}`)
+	dynamicJSONDecode(`{"type":"sensor","timestamp":1626290000,"payload":{"id":"12345","device_id":"12345","result":"ok","product_id":"12345"}}`)
 }
