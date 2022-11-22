@@ -8,14 +8,12 @@ import (
 	"os"
 )
 
-func main() {
-	f, err := os.Open("country.csv")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer f.Close()
-
+func readCSV(f io.Reader, separator rune) [][]string {
 	r := csv.NewReader(f)
+
+	r.Comma = separator
+
+	l := [][]string{}
 	for {
 		record, err := r.Read()
 		if err == io.EOF {
@@ -24,6 +22,25 @@ func main() {
 		if err != nil {
 			log.Fatal(err)
 		}
-		fmt.Println(record)
+		l = append(l, record)
 	}
+	return l
+}
+
+func main() {
+	f, err := os.Open("country.csv")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer f.Close()
+
+	fmt.Println(readCSV(f, ','))
+
+	f, err = os.Open("country.tsv")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer f.Close()
+
+	fmt.Println(readCSV(f, '\t'))
 }
