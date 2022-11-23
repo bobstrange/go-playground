@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log"
 	"net/http"
 	"strings"
 	"sync"
@@ -63,6 +64,28 @@ func main() {
 			w.Write([]byte(`{"status":"created"}`))
 		default:
 			http.Error(w, `{"status":"method not allowed"}`, http.StatusMethodNotAllowed)
+		}
+	})
+	http.HandleFunc("/params", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		switch r.Method {
+		case http.MethodGet:
+			err := r.ParseForm()
+			if err != nil {
+				http.Error(w, fmt.Sprintf(`{"status":"%s"}`, err), http.StatusBadRequest)
+				return
+			}
+
+			word := r.FormValue("searchword")
+			log.Printf("searchword = %s\n", word)
+
+			words, ok := r.Form["searchword"]
+			log.Printf("search words = %v has values %v\n", words, ok)
+
+			log.Print("all params")
+			for key, values := range r.Form {
+				log.Printf("%s = %v\n", key, values)
+			}
 		}
 	})
 
