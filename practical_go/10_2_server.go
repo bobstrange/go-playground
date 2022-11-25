@@ -4,8 +4,10 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
+	"os"
 	"strings"
 	"sync"
 
@@ -66,6 +68,7 @@ func main() {
 			http.Error(w, `{"status":"method not allowed"}`, http.StatusMethodNotAllowed)
 		}
 	})
+
 	http.HandleFunc("/params", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		switch r.Method {
@@ -86,6 +89,39 @@ func main() {
 			for key, values := range r.Form {
 				log.Printf("%s = %v\n", key, values)
 			}
+		}
+	})
+
+	// curl -X POST -F file=@README.md -F data='{"key": "value"}' http://localhost:8080/upload
+	http.HandleFunc("/upload", func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case http.MethodPost:
+			err := r.ParseMultipartForm(32 * 1024 * 1024)
+			if err != nil {
+				http.Error(w, fmt.Sprintf(`{"status":"%s"}`, err), http.StatusBadRequest)
+				return
+			}
+			f, h, err := r.FormFile("file")
+			if err != nil {
+				http.Error(w, fmt.Sprintf(`{"status":"%s"}`, err), http.StatusBadRequest)
+				return
+			}
+			log.Println(h.Filename)
+			o, err := os.Create(h.Filename)
+			if err != nil {
+				http.Error(w, fmt.Sprintf(`{"status":"%s"}`, err), http.StatusInternalServerError)
+				return
+			}
+			defer o.Close()
+
+			_, err = io.Copy(o, f)
+			if err != nil {
+				http.Error(w, fmt.Sprintf(`{"status":"%s"}`, err), http.StatusInternalServerError)
+				return
+			}
+
+			value := r.PostFormValue("data")
+			log.Printf("data = %s\n", value)
 		}
 	})
 
