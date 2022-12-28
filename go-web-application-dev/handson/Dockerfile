@@ -24,3 +24,4 @@ WORKDIR /app
 RUN go install github.com/cosmtrek/air@v1
 
 CMD ["air"]
+EXPOSE 80
