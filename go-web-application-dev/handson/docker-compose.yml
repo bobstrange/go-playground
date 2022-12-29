@@ -6,7 +6,10 @@ services:
       context: ./
       dockerfile: Dockerfile
       args:
-        - target=dev
+        - target=development
+    environment:
+      TODO_ENV: development
+      PORT: 80
     volumes:
       - .:/app
     ports:
