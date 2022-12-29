@@ -1,8 +1,10 @@
-package config
+package config_test
 
 import (
 	"fmt"
 	"testing"
+
+	"github.com/bobstrange/go-playground/go-web-application-dev/handson/config"
 )
 
 func TestNew(t *testing.T) {
@@ -10,7 +12,7 @@ func TestNew(t *testing.T) {
 
 	t.Setenv("PORT", fmt.Sprint(expectedPort))
 
-	got, err := New()
+	got, err := config.New()
 	if err != nil {
 		t.Fatalf("cannot create config: %v", err)
 	}
