@@ -2,6 +2,8 @@ package handler
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
 	"net/http"
 )
 
@@ -16,7 +18,7 @@ func RespondJSON(ctx context.Context, w http.ResponseWriter, body any, status in
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		rsp := ErrResponse{
-			Message: http.StatusText(http.StatusInternalServerError)
+			Message: http.StatusText(http.StatusInternalServerError),
 		}
 		if err := json.NewEncoder(w).Encode(rsp); err != nil {
 			fmt.Printf("write response error: %v", err)
