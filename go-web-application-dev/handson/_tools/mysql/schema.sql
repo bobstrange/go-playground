@@ -8,7 +8,7 @@ CREATE TABLE `user`
   `updated` DATETIME(6) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uix_name` (`name`) USING BTREE
-) Engine=InnoDB DEFAULT CHARSET=utf8mb4
+) Engine=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `task`
 (
@@ -18,4 +18,4 @@ CREATE TABLE `task`
   `created` DATETIME(6) NOT NULL,
   `updated` DATETIME(6) NOT NULL,
   PRIMARY KEY (`id`)
-) Engine=InnoDB DEFAULT CHARSET=utf8mb4
+) Engine=InnoDB DEFAULT CHARSET=utf8mb4;

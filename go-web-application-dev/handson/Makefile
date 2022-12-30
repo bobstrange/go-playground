@@ -24,3 +24,9 @@ ps:
 
 test:
 	go test -race -shuffle=on ./...
+
+migrate:
+	mysqldef -u todo -p todo -h 127.0.0.1 -P 23306 todo < ./_tools/mysql/schema.sql
+
+dry-migrate:
+	mysqldef -u todo -p todo -h 127.0.0.1 -P 23306 todo --dry-run < ./_tools/mysql/schema.sql
