@@ -10,7 +10,29 @@ services:
     environment:
       TODO_ENV: development
       PORT: 80
+      TODO_DB_HOST: todo-db
+      TODO_DB_PORT: 3306
+      TODO_DB_USER: todo
+      TODO_DB_PASASSWORD: todo
+      TODO_DB_DATABASE: todo
     volumes:
       - .:/app
     ports:
       - "8080:80"
+  todo-db:
+    image: mysql:8.0
+    platform: linux/amd64
+    container_name: todo-db
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+      MYSQL_USER: todo
+      MYSQL_PASSWORD: todo
+      MYSQL_DATABASE: todo
+    volumes:
+      - todo-db-data:/var/lib/my sql
+      - $PWD/_tools/mysql/conf.d:/etc/mysql/conf.d:cached
+    ports:
+      - "23306:3306"
+volumes:
+  todo-db-data:
+
