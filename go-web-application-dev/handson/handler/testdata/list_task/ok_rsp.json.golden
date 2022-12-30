@@ -1,0 +1,12 @@
+[
+  {
+    "id": 1,
+    "title": "Example Task 1",
+    "status": "doing"
+  },
+  {
+    "id": 2,
+    "title": "Example Task 2",
+    "status": "todo"
+  }
+]
